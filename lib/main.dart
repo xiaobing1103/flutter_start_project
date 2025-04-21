@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // 引入 SharedPreferences
+import 'package:model_viewer_plus/model_viewer_plus.dart'; // Ensure this import is present
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -208,7 +209,8 @@ class FavoritesPage extends StatelessWidget {
       itemExtent: 100, // 设置固定高度，优化性能
       itemBuilder: (context, index) {
         var pair = appState.favorites[index];
-        return RepaintBoundary( // 防止不必要的重绘
+        return RepaintBoundary(
+          // 防止不必要的重绘
           child: AnimatedCard(pair: pair),
         );
       },
@@ -222,7 +224,8 @@ class AnimatedCard extends StatelessWidget {
   final WordPair pair;
 
   @override
-  Widget build(BuildContext context) { // 添加 const
+  Widget build(BuildContext context) {
+    // 添加 const
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -293,6 +296,50 @@ class _OnboardingPageState extends State<OnboardingPage> {
   int _currentPage = 0;
 
   @override
+  void initState() {
+    super.initState();
+    // 初始化状态栏颜色为第一页的颜色
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: (_pages[0] as Container).color!,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
+    // 添加 PageController 的监听器
+    _pageController.addListener(() {
+      final page = _pageController.page ?? 0.0;
+      final currentIndex = page.floor();
+      final nextIndex =
+          (page.ceil() < _pages.length) ? page.ceil() : currentIndex;
+      // 获取当前页面和下一个页面的颜色
+      final currentColor = (_pages[currentIndex] as Container).color!;
+      final nextColor = (_pages[nextIndex] as Container).color!;
+      // 计算颜色的过渡
+      final progress = page - currentIndex;
+      final blendedColor = Color.lerp(currentColor, nextColor, progress);
+      // 实时更新状态栏颜色
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: blendedColor,
+          statusBarIconBrightness: Brightness.light,
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose(); // 释放 PageController
+    super.dispose();
+  }
+
+  final List<Widget> _pages = [
+    Container(color: Colors.blue),
+    Container(color: Colors.green),
+    Container(color: Colors.purple),
+  ];
+
+  @override
   Widget build(BuildContext context) {
     final pages = [
       _buildPage(
@@ -300,7 +347,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
         title: '欢迎来到 Namer App',
         description: '一个有趣的单词生成器应用！',
         color: Colors.blue,
-        image: Icons.lightbulb,
+        image: Icons.language, // 添加默认图标
+        modelUrl: 'assets/models/black_rat__free_download.glb', // 添加 3D 模型路径
       ),
       _buildPage(
         context,
@@ -323,13 +371,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
         children: [
           PageView.builder(
             controller: _pageController,
-            itemCount: pages.length,
+            itemCount: pages.length, // 使用 pages 的长度
             onPageChanged: (index) {
               setState(() {
                 _currentPage = index;
               });
             },
-            itemBuilder: (context, index) => pages[index],
+            itemBuilder: (context, index) => pages[index], // 使用 pages 的内容
           ),
           Positioned(
             bottom: 20,
@@ -378,13 +426,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
       {required String title,
       required String description,
       required Color color,
-      required IconData image}) {
+      required IconData image,
+      String? modelUrl}) {
     return Container(
       color: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(image, size: 100, color: Colors.white),
+          if (modelUrl != null)
+            SizedBox(
+              height: 200,
+              child: ModelViewer(
+                src: modelUrl, // 3D 模型文件路径
+                alt: "3D 模型",
+                autoRotate: true,
+                cameraControls: true,
+              ),
+            )
+          else
+            Icon(image, size: 100, color: Colors.white),
           SizedBox(height: 20),
           Text(
             title,
