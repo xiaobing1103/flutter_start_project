@@ -437,10 +437,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
             SizedBox(
               height: 200,
               child: ModelViewer(
-                src: modelUrl, // 3D 模型文件路径
+                src: modelUrl, // 模型文件路径
                 alt: "3D 模型",
-                autoRotate: true,
-                cameraControls: true,
+                autoRotate: true, // 自动旋转
+                cameraControls: true, // 启用相机控制
+                disableZoom: true, // 禁用缩放
+                cameraOrbit: "0deg 75deg 2.5m", // 限制垂直角度为 75deg，水平角度可自由拖拽
+                // Removed unsupported parameter 'interactionPolicy'
+                shadowIntensity: 1, // 阴影强度
+                exposure: 1, // 曝光度
               ),
             )
           else
