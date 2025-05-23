@@ -90,7 +90,6 @@ class ApiService {
     await for (final chunk in stream) {
       final decodedChunk = utf8.decode(chunk);
       buffer += decodedChunk;
-
       // 立即处理每个字符
       while (buffer.isNotEmpty) {
         // 处理换行符

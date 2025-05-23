@@ -94,15 +94,13 @@ class _GeneratorPageState extends State<GeneratorPage> {
             onPressed: () => _fetchExplanation(pair.asLowerCase),
             child: Text('解释单词'),
           ),
-          SizedBox(height: 20),
-          if (_isLoading)
-            CircularProgressIndicator()
-          else if (_explanation.isNotEmpty)
+          if (_isLoading) CircularProgressIndicator(),
+          if (_explanation.isNotEmpty) // 将解释内容显示独立出来
             Container(
-              width: double.infinity, // 宽度 100%
-              height: 200, // 固定高度
+              width: double.infinity,
+              height: 200,
               margin: EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.all(10), // padding 10px
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8),
@@ -112,7 +110,6 @@ class _GeneratorPageState extends State<GeneratorPage> {
                 data: _explanation,
                 styleSheet: MarkdownStyleSheet(
                   p: TextStyle(fontSize: 16, color: Colors.black87),
-                  // 可以根据需要添加更多样式
                 ),
                 shrinkWrap: true,
                 physics: ClampingScrollPhysics(),
