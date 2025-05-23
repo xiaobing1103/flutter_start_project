@@ -10,8 +10,8 @@ class ApiService {
       : _dio = Dio(BaseOptions(
           baseUrl: baseUrl,
           headers: headers ?? {},
-          connectTimeout: 10000,
-          receiveTimeout: 10000,
+          connectTimeout: const Duration(milliseconds: 10000),
+          receiveTimeout: const Duration(milliseconds: 10000),
         ));
 
   // 全局 loading 状态控制
@@ -84,33 +84,70 @@ class ApiService {
     final options =
         Options(headers: headers, responseType: ResponseType.stream);
     final response = await _dio.post(path, data: data, options: options);
-    final stream = response.data.stream.transform(utf8.decoder);
-    await for (final char in stream) {
-      yield char;
+    final stream = response.data.stream;
+
+    String buffer = '';
+    await for (final chunk in stream) {
+      final decodedChunk = utf8.decode(chunk);
+      buffer += decodedChunk;
+
+      // 立即处理每个字符
+      while (buffer.isNotEmpty) {
+        // 处理换行符
+        if (buffer.contains('\n')) {
+          final lines = buffer.split('\n');
+          for (final line in lines) {
+            if (line.isNotEmpty) {
+              final chunk = line.replaceAll('\\n', '\n');
+              if (chunk != '[SUCCESS]') {
+                // 逐字返回
+                for (var i = 0; i < chunk.length; i++) {
+                  yield chunk[i];
+                  await Future.delayed(Duration(milliseconds: 50)); // 控制打字速度
+                }
+              }
+            }
+          }
+          buffer = '';
+          break;
+        } else {
+          // 如果没有换行符，直接返回字符
+          yield buffer[0];
+          buffer = buffer.substring(1);
+        }
+      }
     }
   }
 
-  // 处理流式传输（data:{} 格式）
+// 处理流式传输（data:{} 格式）
   Stream<Map<String, dynamic>> postStreamData(String path,
       {dynamic data, Map<String, dynamic>? headers}) async* {
     final options =
         Options(headers: headers, responseType: ResponseType.stream);
     final response = await _dio.post(path, data: data, options: options);
-    final stream = response.data.stream.transform(utf8.decoder);
-    final buffer = StringBuffer();
+    final stream = response.data.stream;
+
+    String buffer = '';
     await for (final chunk in stream) {
-      buffer.write(chunk);
-      if (chunk.contains('\n')) {
-        final lines = buffer.toString().split('\n');
+      final decodedChunk = utf8.decode(chunk); // 直接解码 Uint8List
+      buffer += decodedChunk;
+      if (buffer.contains('\n')) {
+        final lines = buffer.split('\n');
         for (final line in lines) {
           if (line.startsWith('data:')) {
             final jsonData = line.substring(5).trim();
-            if (jsonData.isNotEmpty) {
+            if (jsonData.isNotEmpty && jsonData != '[DONE]') {
+              if (jsonData == '[SUCCESS]') {
+                continue;
+              }
+              if (jsonData.startsWith('[ERROR]')) {
+                throw Exception('API 错误: $jsonData');
+              }
               yield json.decode(jsonData);
             }
           }
         }
-        buffer.clear();
+        buffer = '';
       }
     }
   }
