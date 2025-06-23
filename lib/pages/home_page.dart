@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: '收藏'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite)),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'AI对话'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: '关于'),
         ],

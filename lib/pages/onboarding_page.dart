@@ -45,7 +45,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.language, size: 100, color: Colors.white),
-                    Text('欢迎来到 爱粉岛',
+                    Text('欢迎来到 边界AICHAT',
                         style: TextStyle(color: Colors.white)),
                   ],
                 ),
