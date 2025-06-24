@@ -59,6 +59,7 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
     _statusListener = (status) {
       if (status == AnimationStatus.completed) {
         Future.delayed(Duration(milliseconds: 1200), () {
+          if (!mounted) return; // 修复关键
           setState(() {
             currentIndex = (currentIndex + 1) % changeLists.length;
           });
@@ -192,11 +193,10 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
         'icon':
             'http://file.1foo.com/2025/05/13/5e8a8e07bac49a1b4f89a81d1693afd6.svg',
       });
-      moreIcons = icons.sublist(7);
+      moreIcons = icons.sublist(9);
     } else {
       displayIcons = icons;
     }
-   
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -204,107 +204,86 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
         child: Stack(
           children: [
             SingleChildScrollView(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.9,
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.only(top: 60.0, bottom: 20),
-                      child: Text(
-                        '边界AICHAT',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          fontStyle: FontStyle.italic,
-                          letterSpacing: 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // SizedBox(
+                  //   height: MediaQuery.of(context).size.height * 0.9,
+                  //   width: double.infinity,
+                  //    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.only(top: 100.0, bottom: 20),
+                        child: Text(
+                          '边界AICHAT',
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 2,
+                          ),
                         ),
                       ),
-                    ),
-                    // SearchIndexChangeFont
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            changeLists[currentIndex]['title'],
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                      // SearchIndexChangeFont
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              changeLists[currentIndex]['title'],
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 8),
-                          AnimatedDefaultTextStyle(
-                            duration: Duration(milliseconds: 300),
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: changeLists[currentIndex]['color'],
+                            SizedBox(height: 8),
+                            AnimatedDefaultTextStyle(
+                              duration: Duration(milliseconds: 300),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: changeLists[currentIndex]['color'],
+                              ),
+                              child: Text(typewriterText),
                             ),
-                            child: Text(typewriterText),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    // SearchBox
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          // 跳转到AI对话页面或弹窗
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('跳转到AI对话页面')),
-                          );
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(width: 16),
-                                  SvgPicture.network(
-                                    'http://file.1foo.com/2025/05/12/d243723a7afe9a5094e2526aeeaf3ca6.svg',
-                                    width: 30,
-                                    height: 30,
-                                    placeholderBuilder: (context) => Icon(
-                                        Icons.image,
-                                        size: 30,
-                                        color: Colors.grey),
-                                  ),
-                                  SizedBox(width: 10),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  SvgPicture.network(
-                                    'https://file.1foo.com/2025/05/12/62d17d38098262e805a05e78cabe0b6d.svg',
-                                    width: 30,
-                                    height: 30,
-                                    placeholderBuilder: (context) => Icon(
-                                        Icons.image,
-                                        size: 30,
-                                        color: Colors.grey),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: SvgPicture.network(
-                                      'http://file.1foo.com/2025/05/12/7902991dcf48b54691b7f45ddaa88c97.svg',
+                      // SearchBox
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            // 跳转到AI对话页面或弹窗
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('跳转到AI对话页面')),
+                            );
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(width: 16),
+                                    SvgPicture.network(
+                                      'http://file.1foo.com/2025/05/12/d243723a7afe9a5094e2526aeeaf3ca6.svg',
                                       width: 30,
                                       height: 30,
                                       placeholderBuilder: (context) => Icon(
@@ -312,46 +291,112 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                           size: 30,
                                           color: Colors.grey),
                                     ),
-                                  ),
-                                  SizedBox(width: 10),
-                                ],
-                              ),
-                            ],
+                                    SizedBox(width: 10),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    SvgPicture.network(
+                                      'https://file.1foo.com/2025/05/12/62d17d38098262e805a05e78cabe0b6d.svg',
+                                      width: 30,
+                                      height: 30,
+                                      placeholderBuilder: (context) => Icon(
+                                          Icons.image,
+                                          size: 30,
+                                          color: Colors.grey),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: SvgPicture.network(
+                                        'http://file.1foo.com/2025/05/12/7902991dcf48b54691b7f45ddaa88c97.svg',
+                                        width: 30,
+                                        height: 30,
+                                        placeholderBuilder: (context) => Icon(
+                                            Icons.image,
+                                            size: 30,
+                                            color: Colors.grey),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    // SeletedModels
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0),
-                      child: Stack(
-                        children: [
-                          // SeletedModels内容（相对定位）
-                          GridView.builder(
-                            key: _gridKey,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: displayIcons.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 5,
-                              mainAxisSpacing: 12,
-                              crossAxisSpacing: 12,
-                              childAspectRatio: 0.8,
-                            ),
-                            itemBuilder: (context, idx) {
-                              final item = displayIcons[idx];
-                              final iconUrl = item['icon']!;
-                              final isSvg =
-                                  iconUrl.toLowerCase().endsWith('.svg');
-                              if (item['name'] == '更多') {
+                      // SeletedModels
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 20.0),
+                        child: Stack(
+                          children: [
+                            // SeletedModels内容（相对定位）
+                            GridView.builder(
+                              key: _gridKey,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: displayIcons.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 5,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 0.7,
+                              ),
+                              itemBuilder: (context, idx) {
+                                final item = displayIcons[idx];
+                                final iconUrl = item['icon']!;
+                                final isSvg =
+                                    iconUrl.toLowerCase().endsWith('.svg');
+                                if (item['name'] == '更多') {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _showMoreDialog = true;
+                                      });
+                                      _popupController?.forward(from: 0);
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          padding: EdgeInsets.all(8),
+                                          child: SvgPicture.network(
+                                            iconUrl,
+                                            width: 36,
+                                            height: 36,
+                                            placeholderBuilder: (context) =>
+                                                Icon(Icons.more_horiz,
+                                                    size: 36,
+                                                    color: Colors.grey),
+                                          ),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          item['name']!,
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black87),
+                                          maxLines: 1, // 新增
+                                          overflow: TextOverflow.ellipsis, // 新增
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
                                 return GestureDetector(
                                   onTap: () {
-                                    setState(() {
-                                      _showMoreDialog = true;
-                                    });
-                                    _popupController?.forward(from: 0);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('点击了${item['name']}')),
+                                    );
                                   },
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -363,15 +408,22 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                               BorderRadius.circular(12),
                                         ),
                                         padding: EdgeInsets.all(8),
-                                        child: SvgPicture.network(
-                                          iconUrl,
-                                          width: 36,
-                                          height: 36,
-                                          placeholderBuilder: (context) => Icon(
-                                              Icons.more_horiz,
-                                              size: 36,
-                                              color: Colors.grey),
-                                        ),
+                                        child: isSvg
+                                            ? SvgPicture.network(
+                                                iconUrl,
+                                                width: 30,
+                                                height: 30,
+                                                placeholderBuilder: (context) =>
+                                                    Icon(Icons.image,
+                                                        size: 30,
+                                                        color: Colors.grey),
+                                              )
+                                            : Image.network(
+                                                iconUrl,
+                                                width: 30,
+                                                height: 30,
+                                                fit: BoxFit.contain,
+                                              ),
                                       ),
                                       SizedBox(height: 6),
                                       Text(
@@ -379,68 +431,22 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                         style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.black87),
-                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1, // 新增
+                                        overflow: TextOverflow.ellipsis, // 新增
                                       ),
                                     ],
                                   ),
                                 );
-                              }
-                              return GestureDetector(
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text('点击了${item['name']}')),
-                                  );
-                                },
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: EdgeInsets.all(8),
-                                      child: isSvg
-                                          ? SvgPicture.network(
-                                              iconUrl,
-                                              width: 36,
-                                              height: 36,
-                                              placeholderBuilder: (context) =>
-                                                  Icon(Icons.image,
-                                                      size: 36,
-                                                      color: Colors.grey),
-                                            )
-                                          : Image.network(
-                                              iconUrl,
-                                              width: 36,
-                                              height: 36,
-                                              fit: BoxFit.contain,
-                                            ),
-                                    ),
-                                    SizedBox(height: 6),
-                                    Text(
-                                      item['name']!,
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.black87),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                          // 弹窗（绝对定位，完全覆盖SeletedModels区域）
-                          if (_showMoreDialog)
-                            Positioned.fill(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _showMoreDialog = false;
-                                  });
-                                },
-                                child: Container(
-                                  // color: Colors.black.withOpacity(0.15), // 遮罩层
+                              },
+                            ), // 弹窗（绝对定位，完全覆盖SeletedModels区域）
+                            if (_showMoreDialog)
+                              Positioned.fill(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _showMoreDialog = false;
+                                    });
+                                  },
                                   child: Center(
                                     child: SlideTransition(
                                       position: _popupOffsetAnimation!,
@@ -450,17 +456,21 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                           decoration: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:
-                                                BorderRadius.circular(16),
+                                                BorderRadius.circular(10),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.black26,
                                                 blurRadius: 18,
                                                 spreadRadius: 2,
-                                                offset: Offset(0, 8),
+                                                offset: Offset(0, 5),
                                               ),
                                             ],
                                           ),
-                                          padding: EdgeInsets.all(0),
+                                          padding: EdgeInsets.all(5),
+                                          constraints: BoxConstraints(
+                                            minHeight: 280, // 你可以根据实际内容调整
+                                            minWidth: 300, // 可选，保证宽度
+                                          ),
                                           child: GridView.builder(
                                             padding: EdgeInsets.zero,
                                             shrinkWrap: true,
@@ -470,9 +480,9 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                             gridDelegate:
                                                 SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: 5,
-                                              mainAxisSpacing: 12,
-                                              crossAxisSpacing: 12,
-                                              childAspectRatio: 0.8,
+                                              mainAxisSpacing: 10,
+                                              crossAxisSpacing: 10,
+                                              childAspectRatio: 0.7,
                                             ),
                                             itemBuilder: (context, idx) {
                                               final item = moreIcons[idx];
@@ -492,51 +502,61 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                                             '点击了${item['name']}')),
                                                   );
                                                 },
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12),
+                                                child: Center(
+                                                  // 让内容在格子内居中
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center, // 横向居中
+                                                    children: [
+                                                      Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                        ),
+                                                        padding:
+                                                            EdgeInsets.all(5),
+                                                        child: isSvg
+                                                            ? SvgPicture
+                                                                .network(
+                                                                iconUrl,
+                                                                width: 30,
+                                                                height: 30,
+                                                                placeholderBuilder:
+                                                                    (context) => Icon(
+                                                                        Icons
+                                                                            .image,
+                                                                        size:
+                                                                            30,
+                                                                        color: Colors
+                                                                            .grey),
+                                                              )
+                                                            : Image.network(
+                                                                iconUrl,
+                                                                width: 30,
+                                                                height: 30,
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                              ),
                                                       ),
-                                                      padding:
-                                                          EdgeInsets.all(8),
-                                                      child: isSvg
-                                                          ? SvgPicture.network(
-                                                              iconUrl,
-                                                              width: 36,
-                                                              height: 36,
-                                                              placeholderBuilder:
-                                                                  (context) => Icon(
-                                                                      Icons
-                                                                          .image,
-                                                                      size: 36,
-                                                                      color: Colors
-                                                                          .grey),
-                                                            )
-                                                          : Image.network(
-                                                              iconUrl,
-                                                              width: 36,
-                                                              height: 36,
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                            ),
-                                                    ),
-                                                    SizedBox(height: 6),
-                                                    Text(
-                                                      item['name']!,
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color:
-                                                              Colors.black87),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ],
+                                                      // SizedBox(height: 4),
+                                                      Text(
+                                                        item['name']!,
+                                                        style: TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.black87),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               );
                                             },
@@ -547,13 +567,13 @@ class _AIChatPageState extends State<AIChatPage> with TickerProviderStateMixin {
                                   ),
                                 ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    // 可选：底部TabBar等
-                  ],
-                ),
+                      // 可选：底部TabBar等
+                    ],
+                  ),
+                ],
               ),
             ),
             // 弹窗（只覆盖SeletedModels区域，点击弹窗外关闭，点击弹窗内不关闭）

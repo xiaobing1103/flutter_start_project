@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../pages/generator_page.dart';
 import '../pages/favorites_page.dart';
+import '../pages/camera_page.dart';
 import '../pages/ai_chat_page.dart'; // 新增导入
 
 class HomePage extends StatefulWidget {
@@ -21,10 +22,10 @@ class _HomePageState extends State<HomePage> {
       case 1:
         content = FavoritesPage();
         break;
-      case 2:
+      case 3:
         content = AIChatPage();
         break;
-      case 3:
+      case 4:
         content = Center(child: Text('关于页面')); // 占位，可替换为AboutPage
         break;
       default:
@@ -35,21 +36,55 @@ class _HomePageState extends State<HomePage> {
         duration: Duration(milliseconds: 300),
         child: content,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (value) {
-          setState(() {
-            selectedIndex = value;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: '收藏'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite)),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'AI对话'),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: '关于'),
+      // 用 Stack 叠加自定义中间按钮
+      bottomNavigationBar: Stack(
+        alignment: Alignment.center,
+        children: [
+          BottomNavigationBar(
+            currentIndex: selectedIndex,
+            onTap: (value) {
+              // 点击中间空白不切换
+              if (value == 2) return;
+              setState(() {
+                selectedIndex = value;
+              });
+            },
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
+              BottomNavigationBarItem(icon: Icon(Icons.favorite), label: '收藏'),
+              BottomNavigationBarItem(
+                  icon: SizedBox.shrink(), label: ''), // 中间留空
+              BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'AI对话'),
+              BottomNavigationBarItem(icon: Icon(Icons.info), label: '关于'),
+            ],
+            type: BottomNavigationBarType.fixed,
+            // showSelectedLabels: false,
+            // showUnselectedLabels: false,
+          ),
+          Positioned(
+            bottom: 10 + MediaQuery.of(context).padding.bottom, // 适配底部安全区
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CameraPage()),
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/icons/camera.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }

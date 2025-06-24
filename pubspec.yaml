@@ -32,3 +32,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/models/black_rat__free_download.glb # 添加 3D 模型文件路径
+    - assets/icons/camera.png
